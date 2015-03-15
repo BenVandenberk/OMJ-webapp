@@ -1,13 +1,21 @@
-function showXMLOpdrachten(request, resultRegion) {
-	if ((request.readyState == 4) && (request.status == 200)) {
-		var XML = request.responseXML;
-		var headings = XML.getElementsByTagName('heading');
-		var opdrachten = XML.getElementsByTagName('opdracht');
-		htmlInsert(createTable(headings, opdrachten), resultRegion);
-	}
-	if ((request.readyState == 4) && (request.status == 521)) {
-		htmlInsert(request.responseText, resultRegion);
-	}
+$(function(){
+	$("#zoekOpdrachtForm").submit(function(e) {
+		e.preventDefault();
+		var data = $(this).serialize();
+		$.ajax({
+			url: "ZoekOpdracht",
+			method: "GET",
+			data: data,
+			dataType: "xml",
+			success: toonOpdrachten
+		})
+	})
+});
+
+function toonOpdrachten(data, statusText, jqXHR) {
+	var headings = data.getElementsByTagName('heading');
+	var opdrachten = data.getElementsByTagName('opdracht');
+	$("#output").html(createTable(headings, opdrachten));
 }
 
 function createTable(headings, data) {

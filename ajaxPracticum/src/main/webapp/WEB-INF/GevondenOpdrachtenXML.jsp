@@ -16,8 +16,8 @@
 			<klant>${opdracht.klant.naam}</klant>
 			<korteOmschrijving>${opdracht.korteOmschrijving}</korteOmschrijving>
 			<omschrijving>${opdracht.omschrijving}</omschrijving>
-			<geopend>${opdracht.geopend}</geopend>
-			<afgesloten>${opdracht.afgesloten}</afgesloten>
+			<geopend>${opdracht.geopend.datumInEuropeesFormaat}</geopend>
+			<afgesloten><c:out value="${empty opdracht.afgesloten.datumInEuropeesFormaat?'Open':opdracht.afgesloten.datumInEuropeesFormaat}" /></afgesloten>
 		</opdracht>
 	</c:forEach> 
 </opdrachten>

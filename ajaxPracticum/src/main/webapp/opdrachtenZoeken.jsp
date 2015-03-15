@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Opdracht Zoeken</title>
-<script src="scripts/ajax.js" type="text/javascript"></script>
+<script src="scripts/jquery.js" type="text/javascript"></script>
 <script src="scripts/zoekOpdracht.js" type="text/javascript"></script>
 <link rel="stylesheet" type="text/css" href="./css/style.css">
 </head>
@@ -26,7 +26,7 @@
 <h1>Opdrachten zoeken</h1>
 <h3>Geef zoekparameters in:</h3>
 
-<form action="">
+<form id="zoekOpdrachtForm">
 
 <table>
 	<tr>
@@ -38,7 +38,7 @@
 		<td><input type="text" name="beheerder"/></td>
 	</tr>
 	<tr>
-		<td><input type="button" value="Zoek" onclick="ajaxGet('ZoekOpdracht', this.form, 'output', showXMLOpdrachten)"/></td>
+		<td><input type="submit" value="Zoek"/></td>
 	</tr>
 </table>
 

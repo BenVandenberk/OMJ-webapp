@@ -41,6 +41,13 @@ input:required {
 	border-radius: 5px;
 }
 
+.errorMessages {
+	color: red;
+	font-weight: bold;
+	padding: 10px;
+	text-align: center;
+}
+
 .center {
 	text-align: center;
 }

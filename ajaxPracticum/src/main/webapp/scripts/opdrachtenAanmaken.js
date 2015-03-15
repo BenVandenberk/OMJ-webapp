@@ -1,101 +1,76 @@
 var klanten;
 
-function load() {
-	ajaxSimpleGet('ZoekKlant', handleResponse);
-	vulDatumIn('huidigeDatum');
-}
+$(function() {
+	$.ajax({
+		url : "ZoekKlant",
+		method : "GET",
+		dataType : "json",
+		success : vulSelect
+	});
 
-function handleResponse(request) {
-	if ((request.readyState == 4) && (request.status == 200)) {
-		var rawData = request.responseText;
-		var data = eval('(' + rawData + ')');
-		klanten = data.klanten;
-		vulSelect(klanten, 'klanten');
-	}
-	if ((request.readyState == 4) && (request.status == 521)) {
-		htmlInsert('Fout bij het laden van klanten:\n' + request.responseText,
-				'error');
-	}
-}
+	$("#opdrachtForm").validate({
+		rules : {
+			korteOmschrijving : {
+				required: true,
+				minlength: 5
+			},
+			beheerder : "required"
+		},
+		messages : {			
+			beheerder : {
+				required: "Geef de beheerder van de opdracht mee"				
+			},
+			korteOmschrijving: {
+				required: "Geef een korte omschrijving in",
+				minlength: "De omschrijving moet minstens 5 karakters lang zijn"
+			}
+		},
+		errorElement : 'div',
+		errorLabelContainer: '.errorMessages'
+	});
 
-function prepareData(form) {
-	var parameters = "";
-	var first = true;
-	for (var i = 0; i < form.elements.length; i++) {
-		if (form.elements[i].type == 'submit') {
-			continue;
+	$("#btnMaakOpdracht").click(function(e) {
+		if ($("#opdrachtForm").valid()) {
+			var formData = prepareData("opdrachtForm");
+			$.ajax({
+				url : "OpdrachtAanmaken",
+				method : "POST",
+				data : formData,
+				success : function(data, statusText, jqXHR) {
+					alert("Opdracht geregistreerd");
+				}
+			});
 		}
-		if (form.elements[i].type == 'button') {
-			continue;
-		}
-		if (!first) {
-			parameters += '&';
-		}
-		if (form.elements[i].type == 'select-one') {
-			var select = form.elements[i];
-			var klant = klanten[select.selectedIndex];
-			parameters += 'klantId=' + klant.id;
-		} else {
-			parameters += form.elements[i].name + '=' + form.elements[i].value;
-		}
-		first = false;
-	}
-	return parameters;
-}
+	})
 
-function dataOk() {
-	var message = '';
+	$("#huidigeDatum").html(getDatum());
+});
 
-	var select = document.getElementById('klanten');
-	if (select.selecedIndex < 0) {
-		message += 'Klant\n';
-	}
-	var korteOmschrijving = document.getElementsByName('korteOmschrijving')[0];
-	if (korteOmschrijving.value == '') {
-		message += 'Korte omschrijving\n';
-	}
-	var beheerder = document.getElementsByName('beheerder')[0];
-	if (beheerder.value == '') {
-		message += 'Beheerder\n';
-	}
-	
-	if (message == '') {
-		return {
-			message: message,
-			error: false
-		};
-	} else {
-		return {
-			message: 'Je mist volgende velden:\n' + message,
-			error: true
-		};
-	}
-}
-
-function vulSelect(klanten, id) {
-	var select = document.getElementById(id);
+function vulSelect(data, statusText, jqXHR) {
+	klanten = data.klanten;
 	for (var i = 0; i < klanten.length; i++) {
 		var opt = document.createElement('option');
 		opt.text = klanten[i].naam;
 		opt.value = klanten[i];
-		select.appendChild(opt);
+		$("#klanten").append(opt);
 	}
 }
 
-function vulDatumIn(labelId) {
-	var today = new Date();
-	var dd = today.getDate();
-	var mm = today.getMonth() + 1;
-	var yyyy = today.getFullYear();
+function prepareData(formId) {
+	var formData = $("#" + formId).serialize();
+	var selectedIndex = $("#" + formId).find("select").prop("selectedIndex");
+	var klant = klanten[selectedIndex];
+	formData += '&klantId=' + klant.id;
+	return formData;
+}
 
-	if (dd < 10) {
-		dd = '0' + dd
-	}
-
-	if (mm < 10) {
-		mm = '0' + mm
-	}
-
-	today = dd + '/' + mm + '/' + yyyy;
-	htmlInsert(today, labelId);
+function valideer() {
+	$("#opdrachtForm").validate({
+		rules : {
+			korteOmschrijving : "required"
+		},
+		messages : {
+			korteOmschrijving : "Geef een korte omschrijving in"
+		}
+	});
 }

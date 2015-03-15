@@ -1,13 +1,19 @@
-function showJSONKlanten(request, resultRegion) {
-    if ((request.readyState == 4) && (request.status == 200)) {
-    	var rawData = request.responseText;
-    	var data = eval('(' + rawData + ')');
-    	var table = createTable(data.headings, data.klanten);
-    	htmlInsert(table, resultRegion);
-    }
-    if ((request.readyState == 4) && (request.status == 521)) {
-    	htmlInsert(request.responseText, resultRegion);
-    }
+$(function() {
+	$("#zoekKlantForm").submit(function(e) {
+		e.preventDefault();
+		var data = $(this).serialize();
+		$.ajax({
+			url : "ZoekKlant",
+			method : "GET",
+			data : data,
+			success : toonKlanten,
+			dataType : "json"
+		});
+	})
+});
+
+function toonKlanten(data, textStatus, jqXHR) {	
+	$("#output").html(createTable(data.headings, data.klanten));
 }
 
 function createTable(headings, data) {
@@ -30,4 +36,3 @@ function createTable(headings, data) {
 	html += '</table>';
 	return html;
 }
-
